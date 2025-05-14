@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: konnect-reconciler
+  namespace: konnect-reconciler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: konnect-reconciler
+  template:
+    metadata:
+      labels:
+        app: konnect-reconciler
+    spec:
+      serviceAccountName: konnect-reconciler-sa
+      containers:
+      - name: konnect-reconciler
+        image: nexus.pve-1.schenkeveld.io:8444/konnect-reconciler:1.0.25
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: SYNC_INTERVAL
+          value: "30"
+        - name: KONNECT_ADDR
+          value: "https://us.api.konghq.com"
+        - name: KONNECT_CONTROL_PLANE_NAME
+          value: "Payload Park"
+        - name: DECK_SYNC
+          value: "true"
+        volumeMounts:
+        - name: konnect-token
+          mountPath: /secrets
+          readOnly: true
+      volumes:
+      - name: konnect-token
+        secret:
+          secretName: konnect-token

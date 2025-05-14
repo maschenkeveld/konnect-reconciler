@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: example-configmap
+  namespace: konnect-reconciler
+  labels:
+    konnect-deck: "true"
+data:
+  deck: |
+    _format_version: "3.0"
+    services:
+    - name: example-service
+      url: http://httpbin.konghq.com
+      routes:
+      - name: example-route
+        service: 
+          name: example-service
+        paths:
+          - "/"
